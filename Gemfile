@@ -35,6 +35,10 @@ gem 'jbuilder', '~> 2.5'
 
 gem 'omniauth-oauth2'
 
+# use pry
+gem 'pry-byebug'
+gem 'pry-rails'
+
 # Reduces boot times through caching; required in config/boot.rb
 gem 'bootsnap', '>= 1.1.0', require: false
 

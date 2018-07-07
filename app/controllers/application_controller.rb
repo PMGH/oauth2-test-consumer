@@ -1,8 +1,7 @@
 class ApplicationController < ActionController::Base
-  # auth = request.env['omniauth.auth']
-  # render json: auth.to_json
 
   def authentication_callback
-    binding.pry
+    auth = request.env['omniauth.auth']
+    render json: auth
   end
 end

@@ -16,8 +16,8 @@ class ApplicationController < ActionController::Base
   def set_user auth
     user = {
       id: auth['uid'],
-      name: auth['info']['name'],
-      email: auth['info']['email']
+      name: auth['extra']['raw_info']['name'],
+      email: auth['extra']['raw_info']['email']
     }
     User.find_or_create_by(user)
     cookies.permanent[:access_token] = auth['credentials']['token']

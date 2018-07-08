@@ -37,6 +37,7 @@ gem 'jbuilder', '~> 2.5'
 gem 'omniauth-oauth2'
 
 # Use jwt
+# https://github.com/jwt/ruby-jwt
 gem 'jwt'
 
 # Use pry

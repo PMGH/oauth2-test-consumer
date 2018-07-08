@@ -1,4 +1,7 @@
+require 'verify_access_token'
+
 class UsersController < ApplicationController
+  before_action :verify_access_token
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   # GET /users

@@ -33,9 +33,13 @@ gem 'jbuilder', '~> 2.5'
 # Use Capistrano for deployment
 # gem 'capistrano-rails', group: :development
 
+# Use omniauth2
 gem 'omniauth-oauth2'
 
-# use pry
+# Use jwt
+gem 'jwt'
+
+# Use pry
 gem 'pry-byebug'
 gem 'pry-rails'
 

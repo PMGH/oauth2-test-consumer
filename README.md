@@ -28,7 +28,8 @@ Devise is used to Authenticate users and Doorkeeper is used to Authorize applica
 This application is the OAuth Consumer/Client application (on port 3001) and should be run alongside the Provider/Server application (on port 3000).
 
 The reason they are to be run on specific ports is due to the omniauth configuration on the Consumer application in doorkeeper.rb:
-```rubyonrails
+
+```
 option :client_options, {
   site:          'http://localhost:3000',
   authorize_url: 'http://localhost:3000/oauth/authorize'
@@ -62,7 +63,8 @@ git clone git@github.com:PMGH/oauth2-test-consumer.git
 - The Consumer app contains an omniauth strategy (named 'doorkeeper') that redirects the user to the Provider application.
 - The Omniauth strategy must be configured to use the Provider application Client_ID and Client_Secret.
 - Verifies the access_token cookie on each request (HTML).
-- Verifies the bearer token on each request (JSON API).
+- Verifies the Authorization bearer_token on each request (JSON API).
+- If the user doesn't have a valid access_token or bearer_token they are redirected to the Provider app sign_in page.
 
 
 ## Workflow (HTML)
@@ -83,6 +85,7 @@ For example:
 - User is redirected to the Consumer app that they initially tried to access.
 - The Consumer app adds an access_token cookie that allows the user access for as long as the token is valid.
 - Token expiry is determined by the Provider app (the issuer) in the doorkeeper.rb file.
+- The user should be able to access the Consumer app.
 
 
 ## API Journey (JSON)
@@ -111,6 +114,130 @@ Client Authentication:  Send client credentials in body
 
 You can now include the returned access_token in subsequent requests to the Consumer application.\n
 This can be done by setting the Authorization Type to Bearer Token for those requests and using 'Bearer [access_token]'.
+
+
+## Key steps
+
+**Key Gems**
+- ruby '2.5.1'
+- gem 'omniauth-oauth2'
+- gem 'jwt'
+
+**Routes**
+- redirect to the /auth/doorkeeper (omniauth strategy)
+- get '/auth/doorkeeper/callback' => 'application#authentication_callback'
+- can constrain the root path if no access_token cookie is present (and redirect to /auth/doorkeeper) - there may be a better way of handling this...
+Note: constraint is needed at the moment as the verify_access_token method is used on controllers only not at root
+
+```
+Rails.application.routes.draw do
+  # redirect root ('localhost:3001/') to '/auth/doorkeeper' - omniauth strategy if no access_token cookie
+  root to: redirect('/auth/doorkeeper'), constraints: lambda { |request| !request.cookies['access_token'] }
+
+  # get '/auth/:provider/callback' => 'application#authentication_callback'
+  get '/auth/doorkeeper/callback' => 'application#authentication_callback'
+end
+```
+
+**Omniauth Strategy**
+- define the Provider application in the omniauth.rb file in the /config/initializers directory
+```
+require 'doorkeeper'
+
+Rails.application.config.middleware.use OmniAuth::Builder do
+  # provider :doorkeeper, <application_id>, <application_secret>
+  provider :doorkeeper, '7284d5786ad5f08a523916b992175210dc4dd1b6995e0028d5d856a31f077523', 'dafa4a696ff4c4b6ddb9a0b6253414e2c05ee2b221e8fb6cbd5ba635abed5e45'
+end
+```
+
+**Setup the Application controller**
+- add an authentication_callback method, this is the method that will be called when the user is redirected after they authorize the Consumer application. (This could be changed to redirect the user to the home page after setting the user).
+- add a set_user method to find_or_create the user based on the contents of the auth object. This will build up a Consumer Users database over time. GDPR should be considered. For example, if a User is updated/deleted from the User Service (Provider) a cascading service may be needed.
+```
+class ApplicationController < ActionController::Base
+  def authentication_callback
+    auth = request.env['omniauth.auth']
+    if auth
+      set_user(auth)
+      render json: auth
+    else
+      redirect_to "http://localhost:3000/users/sign_in"
+    end
+  end
+
+  private
+
+  def set_user auth
+    user = {
+      id: auth['uid'],
+      name: auth['extra']['raw_info']['name'],
+      email: auth['extra']['raw_info']['email']
+    }
+    User.find_or_create_by(user)
+    cookies[:access_token] = auth['credentials']['token']
+  end
+end
+```
+
+**Verify Access Token**
+- add the verify access_token function in /lib directory so that it can be required into the necessary controllers.
+```
+def verify_access_token
+  token = cookies[:access_token]
+  jwt = JWT.decode token, ENV['SECRET'], true, { algorithm: ENV['ALGORITHM'] } if token
+  redirect_to "http://localhost:3001/auth/doorkeeper" if !jwt
+end
+```
+
+**Setup a controller**
+- inherit from the ApplicationController.
+- require the verify_access_token method from the /lib directory.
+- add a before_action for :verify_access_token so that the access_token is verified prior to a controller action taking place. i.e. checks the user is allowed to perform an action.
+- scopes could be added to the access_token (permissions) TBC
+```
+require 'verify_access_token'
+
+class UsersController < ApplicationController
+  before_action :verify_access_token
+  before_action :set_user, only: [:show, :edit, :update, :destroy]
+
+  # GET /users
+  # GET /users.json
+  def index
+    @users = User.all
+  end
+
+  .
+  .
+  .
+```
+
+**Environment Variables**
+- environment variables such as JWT secret and hashing algorithm can be stored in the local_env.yml e.g.
+```
+SECRET: "SOME-SECRET"
+ALGORITHM: "ENIGMA-CODE"
+```
+- load local_env.yml into application (/config/application.rb):
+```
+module OauthClient
+  class Application < Rails::Application
+    # load local_env.yml file
+    config.before_configuration do
+      env_file = File.join(Rails.root, 'config', 'local_env.yml')
+      YAML.load(File.open(env_file)).each do |key, value|
+        ENV[key.to_s] = value
+      end if File.exists?(env_file)
+    end
+  end
+end
+```
+- local_env values can be accessed using ENV['key_name'] e.g. ENV['SECRET']
+- note that this is how the verify_access_token method gets it's Secret and Algorithm values. These should be agreed between the Provider and Consumer applications.
+
+**Sign Out**
+- sign out is handled by a GET request (configurable (GET/DELETE) in the Provider doorkeeper.rb) to :provider/users/sign_out e.g. http://localhost:3000/users/sign_out
+- sign out performs a delete session but overrides the destroy method of the Devise::SessionsController to additionally clear the access_token cookie.
 
 
 ## Resources

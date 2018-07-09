@@ -3,7 +3,8 @@ class ApplicationController < ActionController::Base
     auth = request.env['omniauth.auth']
     if auth
       set_user(auth)
-      render json: auth
+      redirect_to users_path
+      # render json: auth
     else
       redirect_to "http://localhost:3000/users/sign_in"
     end

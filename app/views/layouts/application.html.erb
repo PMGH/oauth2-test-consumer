@@ -10,6 +10,11 @@
   </head>
 
   <body>
+    <nav>
+      <%= button_to "Users", "http://localhost:3001/users", method: :get %>
+      <%= button_to "API Test", "http://localhost:3001/api/test", method: :get %>
+      <%= button_to "Sign Out", "http://localhost:3000/users/sign_out", method: :get %>
+    </nav>
     <%= yield %>
   </body>
 </html>

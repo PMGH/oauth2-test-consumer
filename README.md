@@ -106,6 +106,7 @@ This can be done by setting the Authorization Type to Bearer Token for those req
 - OAuth2 Overview:  https://www.youtube.com/watch?v=CPbvxxslDTU
 - Difference between OAuth1 and OAuth2:  https://stackoverflow.com/questions/4113934/how-is-oauth-2-different-from-oauth-1
 - Introduction to OAuth2:  https://hueniverse.com/introducing-oauth-2-0-b5681da60ce2
+- OAuth2 Simplified:  https://aaronparecki.com/oauth-2-simplified/
 
 **Devise**
 - Devise:  https://github.com/plataformatec/devise
@@ -120,8 +121,14 @@ This can be done by setting the Authorization Type to Bearer Token for those req
 - JWTs:  https://jwt.io/
 - Understanding JWTs:  https://medium.com/vandium-software/5-easy-steps-to-understanding-json-web-tokens-jwt-1164c0adfcec
 
+**Sessions and Cookies**
+- Sessions and Cookies in Rails:  https://www.theodinproject.com/courses/ruby-on-rails/lessons/sessions-cookies-and-authentication
+
 **CSRF**
 - API:  https://stackoverflow.com/questions/9362910/rails-warning-cant-verify-csrf-token-authenticity-for-json-devise-requests
+
+**Security in Rails**
+- Security:  http://guides.rubyonrails.org/security.html
 
 **Code-along Tutorials**
 - OAuth2 on Rails (the Provider application):  https://dev.mikamai.com/2015/02/11/oauth2-on-rails/

@@ -20,6 +20,6 @@ class ApplicationController < ActionController::Base
       email: auth['extra']['raw_info']['email']
     }
     User.find_or_create_by(user)
-    cookies.permanent[:access_token] = auth['credentials']['token']
+    cookies[:access_token] = auth['credentials']['token']
   end
 end

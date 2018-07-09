@@ -7,6 +7,8 @@ class Api::ApplicationController < ActionController::Base
   def verify_bearer_token
     token = request.headers['Authorization'].split(' ')[1]
     jwt = JWT.decode token, ENV['SECRET'], true, { algorithm: ENV['ALGORITHM'] } if token
-    render json: { error: 'no bearer token' } if !jwt
+    # render error if no access_token given or the access_token (jwt) decode fails
+    # e.g. wrong hashing algorithm - identifing it as not from the Provider application
+    render json: { error: 'no bearer token' } if !token || !jwt
   end
 end

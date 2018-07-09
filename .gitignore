@@ -30,4 +30,4 @@
 /config/master.key
 
 # Ignore local_env
-/config/local_env.rb
+/config/local_env.yml

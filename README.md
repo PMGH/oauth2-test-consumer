@@ -18,6 +18,10 @@
 ## About
 This is a dummy OAuth application (Consumer).
 
+In short this OAuth2 application (Provider and Consumer) displays the relationship between a User Service (the Provider application) that Authenticates the User and allows them to Authorize applications.
+
+Devise is used to Authenticate users and Doorkeeper is used to Authorize applications.
+
 
 ## Getting up and running
 

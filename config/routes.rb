@@ -2,6 +2,10 @@ Rails.application.routes.draw do
   resources :users
   # For details on the DSL available within this file, see http://guides.rubyonrails.org/routing.html
 
+  namespace :api do
+    resources :test
+  end
+
   # redirect root ('localhost:3001/') to '/auth/doorkeeper' - omniauth strategy if no access_token cookie
   root to: redirect('/auth/doorkeeper'), constraints: lambda { |request| !request.cookies['access_token'] } # !cookies[:access_token]
 

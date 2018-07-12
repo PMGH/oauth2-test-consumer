@@ -77,7 +77,7 @@ For example:
 
 `http://localhost:3000/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code`
 
-![authorize an application](public/authorization.png =250x250)
+<img src="public/authorization.png" alt="authorize an application" width="200px" height="200px" />
 
 - Once authorized the user will be provided with an authentication code that the Provider app exchanges for an access_token.
 - User is redirected to the Consumer app that they initially tried to access.
@@ -87,7 +87,7 @@ For example:
 
 - The user can check which applications they have authorized by visiting: http://localhost:3000/oauth/authorized_applications
 
-![authorized applications](public/authorized_applications.png =250x250)
+<img src="public/authorized_applications.png" alt="authorized applications" width="200px" height="200px" />
 
 
 ## API Journey (JSON)

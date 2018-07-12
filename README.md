@@ -114,9 +114,9 @@ Client Authentication:  Send client credentials in body
 
 - Request Token
 
-You can now include the returned access_token in subsequent requests to the Consumer application.
+> You can now include the returned access_token in subsequent requests to the Consumer application.
 
-This can be done by setting the Authorization Type to Bearer Token for those requests and using `Bearer [access_token]`.
+> This can be done by setting the Authorization Type to Bearer Token for those requests and using `Bearer [access_token]`.
 
 
 ## Key steps

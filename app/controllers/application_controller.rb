@@ -3,8 +3,8 @@ class ApplicationController < ActionController::Base
     auth = request.env['omniauth.auth']
     if auth
       set_user(auth)
-      redirect_to users_path
-      # render json: auth
+      # redirect_to users_path
+      render json: auth
     else
       redirect_to "http://localhost:3000/users/sign_in"
     end
@@ -19,6 +19,6 @@ class ApplicationController < ActionController::Base
       email: auth['extra']['raw_info']['email']
     }
     User.find_or_create_by(user)
-    cookies[:access_token] = auth['credentials']['token']
+    cookies[:access_token] = { value: auth['credentials']['token'], :httponly => true, :expires => 10.minutes.from_now }
   end
 end

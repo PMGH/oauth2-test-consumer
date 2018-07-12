@@ -29,7 +29,7 @@ This application is the OAuth Consumer/Client application (on port 3001) and sho
 
 The reason they are to be run on specific ports is due to the omniauth configuration on the Consumer application in doorkeeper.rb:
 
-```
+```ruby
 option :client_options, {
   site:          'http://localhost:3000',
   authorize_url: 'http://localhost:3000/oauth/authorize'
@@ -42,9 +42,7 @@ The Provider application authenticates the user using the devise gem. It also ca
 
 Once running, Consumer applications can be added on the http://localhost:3000/oauth/applications page.
 
-```
-git clone git@github.com:PMGH/oauth2-test-provider.git
-```
+`git clone git@github.com:PMGH/oauth2-test-provider.git`
 
 - cd into repo and run: `PORT=3000 rails server`
 
@@ -53,9 +51,7 @@ git clone git@github.com:PMGH/oauth2-test-provider.git
 
 The OAuth Consumer application is the application which the user is seeking access to.
 
-```
-git clone git@github.com:PMGH/oauth2-test-consumer.git
-```
+`git clone git@github.com:PMGH/oauth2-test-consumer.git`
 
 - cd into repo and run: `PORT=3001 rails server`
 
@@ -68,8 +64,8 @@ git clone git@github.com:PMGH/oauth2-test-consumer.git
 
 
 ## Workflow (HTML)
-- When trying to access the Consumer app (localhost:3001) for the first time the user should be redirected to the sign in page of the Provider app (localhost:3000/users/sign_in)
-- Once signed in they should be presented with the Authorization request (at localhost:3000/oauth/authorize) with Authorize and Deny buttons. The url should contain the following query params:
+- When trying to access the Consumer app (http://localhost:3001) for the first time the user should be redirected to the sign in page of the Provider app (http://localhost:3000/users/sign_in)
+- Once signed in they should be presented with the Authorization request (at http://localhost:3000/oauth/authorize) with Authorize and Deny buttons. The url should contain the following query params:
 
 ```
 client_id - the Consumer app id found on the http://localhost:3000/oauth/applications/:id page
@@ -118,8 +114,9 @@ Client Authentication:  Send client credentials in body
 
 - Request Token
 
-You can now include the returned access_token in subsequent requests to the Consumer application.\n
-This can be done by setting the Authorization Type to Bearer Token for those requests and using 'Bearer [access_token]'.
+You can now include the returned access_token in subsequent requests to the Consumer application.
+
+This can be done by setting the Authorization Type to Bearer Token for those requests and using `Bearer [access_token]`.
 
 
 ## Key steps
@@ -135,7 +132,7 @@ This can be done by setting the Authorization Type to Bearer Token for those req
 - can constrain the root path if no access_token cookie is present (and redirect to /auth/doorkeeper) - there may be a better way of handling this...
 Note: constraint is needed at the moment as the verify_access_token method is used on controllers only not at root
 
-```
+```ruby
 Rails.application.routes.draw do
   # redirect root ('localhost:3001/') to '/auth/doorkeeper' - omniauth strategy if no access_token cookie
   root to: redirect('/auth/doorkeeper'), constraints: lambda { |request| !request.cookies['access_token'] }
@@ -147,7 +144,8 @@ end
 
 **Omniauth Strategy**
 - define the Provider application in the omniauth.rb file in the /config/initializers directory
-```
+
+```ruby
 require 'doorkeeper'
 
 Rails.application.config.middleware.use OmniAuth::Builder do
@@ -159,7 +157,8 @@ end
 **Setup the Application controller**
 - add an authentication_callback method, this is the method that will be called when the user is redirected after they authorize the Consumer application. (This could be changed to redirect the user to the home page after setting the user).
 - add a set_user method to find_or_create the user based on the contents of the auth object. This will build up a Consumer Users database over time. GDPR should be considered. For example, if a User is updated/deleted from the User Service (Provider) a cascading service may be needed.
-```
+
+```ruby
 class ApplicationController < ActionController::Base
   def authentication_callback
     auth = request.env['omniauth.auth']
@@ -187,7 +186,8 @@ end
 
 **Verify Access Token**
 - add the verify access_token function in /lib directory so that it can be required into the necessary controllers.
-```
+
+```ruby
 def verify_access_token
   token = cookies[:access_token]
   jwt = JWT.decode token, ENV['SECRET'], true, { algorithm: ENV['ALGORITHM'] } if token
@@ -199,8 +199,9 @@ end
 - inherit from the ApplicationController.
 - require the verify_access_token method from the /lib directory.
 - add a before_action for :verify_access_token so that the access_token is verified prior to a controller action taking place. i.e. checks the user is allowed to perform an action.
-- scopes could be added to the access_token (permissions) TBC
-```
+- scopes could be added to the access_token (permissions) **TBC**
+
+```ruby
 require 'verify_access_token'
 
 class UsersController < ApplicationController
@@ -220,12 +221,15 @@ class UsersController < ApplicationController
 
 **Environment Variables**
 - environment variables such as JWT secret and hashing algorithm can be stored in the local_env.yml e.g.
-```
+
+```ruby
 SECRET: "SOME-SECRET"
 ALGORITHM: "ENIGMA-CODE"
 ```
+
 - load local_env.yml into application (/config/application.rb):
-```
+
+```ruby
 module OauthClient
   class Application < Rails::Application
     # load local_env.yml file
@@ -238,6 +242,7 @@ module OauthClient
   end
 end
 ```
+
 - local_env values can be accessed using ENV['key_name'] e.g. ENV['SECRET']
 - note that this is how the verify_access_token method gets it's Secret and Algorithm values. These should be agreed between the Provider and Consumer applications.
 

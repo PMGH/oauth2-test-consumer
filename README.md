@@ -81,11 +81,17 @@ For example:
 
 `http://localhost:3000/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code`
 
+![authorize an application](/authorization.png)
+
 - Once authorized the user will be provided with an authentication code that the Provider app exchanges for an access_token.
 - User is redirected to the Consumer app that they initially tried to access.
 - The Consumer app adds an access_token cookie that allows the user access for as long as the token is valid.
 - Token expiry is determined by the Provider app (the issuer) in the doorkeeper.rb file.
 - The user should be able to access the Consumer app.
+
+- The user can check which applications they have authorized by visiting: http://localhost:3000/oauth/authorized_applications
+
+![authorized applications](/authorized_applications.png)
 
 
 ## API Journey (JSON)

@@ -77,7 +77,7 @@ For example:
 
 `http://localhost:3000/oauth/authorize?client_id=YOUR_CLIENT_ID&redirect_uri=urn:ietf:wg:oauth:2.0:oob&response_type=code`
 
-![authorize an application](public/authorization.png)
+![authorize an application](public/authorization.png =250x250)
 
 - Once authorized the user will be provided with an authentication code that the Provider app exchanges for an access_token.
 - User is redirected to the Consumer app that they initially tried to access.
@@ -87,7 +87,7 @@ For example:
 
 - The user can check which applications they have authorized by visiting: http://localhost:3000/oauth/authorized_applications
 
-![authorized applications](public/authorized_applications.png)
+![authorized applications](public/authorized_applications.png =250x250)
 
 
 ## API Journey (JSON)
@@ -100,15 +100,15 @@ For example:
 - Set the necessary Headers e.g.
 
 ```
-Token Name:           Consumer Access Token
-Grant Type:           Authorization code
-Callback URL:         http://localhost:3001/auth/doorkeeper/callback
-Auth URL:             http://localhost:3000/oauth/authorize
-Access Token URL:     http://localhost:3000/oauth/token
-Client ID:            7284d5786ad5f08a523916b992175210dc4dd1b6995e0028d5d856a31f077523
-Client Secret:        dafa4a696ff4c4b6ddb9a0b6253414e2c05ee2b221e8fb6cbd5ba635abed5e45
-Scope:                
-State:                
+Token Name:             Consumer Access Token
+Grant Type:             Authorization code
+Callback URL:           http://localhost:3001/auth/doorkeeper/callback
+Auth URL:               http://localhost:3000/oauth/authorize
+Access Token URL:       http://localhost:3000/oauth/token
+Client ID:              7284d5786ad5f08a523916b992175210dc4dd1b6995e0028d5d856a31f077523
+Client Secret:          dafa4a696ff4c4b6ddb9a0b6253414e2c05ee2b221e8fb6cbd5ba635abed5e45
+Scope:                  
+State:                  
 Client Authentication:  Send client credentials in body
 ```
 
